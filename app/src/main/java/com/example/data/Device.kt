@@ -12,5 +12,9 @@ data class Device(
     val manufacturer: String,
     val model: String,
     val serialNumber: String,
+    val batteryVolt: String = "",
+    val batteryAmpere: String = "",
+    val deviceImageUri: String? = null,
+    val batteryImageUri: String? = null,
     val lastBatteryChangeDate: Long
 )

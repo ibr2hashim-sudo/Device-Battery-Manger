@@ -55,8 +55,8 @@ fun BatteryApp() {
     if (showAddDialog) {
         DeviceFormDialog(
             onDismiss = { showAddDialog = false },
-            onConfirm = { dept, id, name, manufacturer, model, serial ->
-                viewModel.addDevice(dept, id, name, manufacturer, model, serial)
+            onConfirm = { dept, id, name, manufacturer, model, serial, volt, ampere, deviceImg, batteryImg ->
+                viewModel.addDevice(dept, id, name, manufacturer, model, serial, volt, ampere, deviceImg, batteryImg)
                 showAddDialog = false
             }
         )

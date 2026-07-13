@@ -61,7 +61,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addDevice(department: String, assetId: String, name: String, manufacturer: String, model: String, serialNumber: String) {
+    fun addDevice(department: String, assetId: String, name: String, manufacturer: String, model: String, serialNumber: String, batteryVolt: String, batteryAmpere: String, deviceImageUri: String?, batteryImageUri: String?) {
         viewModelScope.launch {
             val device = Device(
                 department = department,
@@ -70,13 +70,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 manufacturer = manufacturer,
                 model = model,
                 serialNumber = serialNumber,
+                batteryVolt = batteryVolt,
+                batteryAmpere = batteryAmpere,
+                deviceImageUri = deviceImageUri,
+                batteryImageUri = batteryImageUri,
                 lastBatteryChangeDate = System.currentTimeMillis()
             )
             repository.insertDevice(device)
         }
     }
 
-    fun updateDevice(device: Device, department: String, assetId: String, name: String, manufacturer: String, model: String, serialNumber: String) {
+    fun updateDevice(device: Device, department: String, assetId: String, name: String, manufacturer: String, model: String, serialNumber: String, batteryVolt: String, batteryAmpere: String, deviceImageUri: String?, batteryImageUri: String?) {
         viewModelScope.launch {
             val updatedDevice = device.copy(
                 department = department,
@@ -84,7 +88,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 name = name,
                 manufacturer = manufacturer,
                 model = model,
-                serialNumber = serialNumber
+                serialNumber = serialNumber,
+                batteryVolt = batteryVolt,
+                batteryAmpere = batteryAmpere,
+                deviceImageUri = deviceImageUri,
+                batteryImageUri = batteryImageUri
             )
             repository.updateDevice(updatedDevice)
         }
@@ -108,9 +116,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository.allDevices.collect { devices ->
                 if (devices.isEmpty()) {
-                    addDevice("IT", "ASSET-001", "Laptop Pro", "Dell", "XPS 15", "SN-92837492")
-                    addDevice("HR", "ASSET-002", "Office Phone", "Samsung", "Galaxy S22", "SN-10293847")
-                    addDevice("Engineering", "ASSET-003", "Test Tablet", "Apple", "iPad Pro", "SN-56473829")
+                    addDevice("IT", "ASSET-001", "Laptop Pro", "Dell", "XPS 15", "SN-92837492", "11.4V", "84Wh", null, null)
+                    addDevice("HR", "ASSET-002", "Office Phone", "Samsung", "Galaxy S22", "SN-10293847", "3.88V", "3700mAh", null, null)
+                    addDevice("Engineering", "ASSET-003", "Test Tablet", "Apple", "iPad Pro", "SN-56473829", "3.77V", "28.65Wh", null, null)
                 }
             }
         }

@@ -19,6 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.example.data.BatteryChangeLog
 import com.example.data.Device
 import com.example.ui.AppViewModel
@@ -50,8 +52,8 @@ fun DeviceDetailScreen(viewModel: AppViewModel, onBack: () -> Unit) {
         DeviceFormDialog(
             initialDevice = device,
             onDismiss = { showEditDialog = false },
-            onConfirm = { dept, id, name, manufacturer, model, serial ->
-                viewModel.updateDevice(device!!, dept, id, name, manufacturer, model, serial)
+            onConfirm = { dept, id, name, manufacturer, model, serial, volt, ampere, deviceImg, batteryImg ->
+                viewModel.updateDevice(device!!, dept, id, name, manufacturer, model, serial, volt, ampere, deviceImg, batteryImg)
                 showEditDialog = false
             }
         )
@@ -123,7 +125,7 @@ fun DeviceDetailScreen(viewModel: AppViewModel, onBack: () -> Unit) {
                 contentPadding = PaddingValues(16.dp)
             ) {
                 item {
-                    DeviceImagesHeader()
+                    DeviceImagesHeader(device!!)
                     Spacer(modifier = Modifier.height(24.dp))
                     DeviceDetailsSection(device!!)
                     Spacer(modifier = Modifier.height(24.dp))
@@ -151,7 +153,7 @@ fun DeviceDetailScreen(viewModel: AppViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-fun DeviceImagesHeader() {
+fun DeviceImagesHeader(device: Device) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -165,10 +167,19 @@ fun DeviceImagesHeader() {
                 .background(MaterialTheme.colorScheme.secondaryContainer),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Default.PhoneAndroid, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSecondaryContainer)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("صورة الجهاز", color = MaterialTheme.colorScheme.onSecondaryContainer, style = MaterialTheme.typography.labelMedium)
+            if (device.deviceImageUri != null) {
+                AsyncImage(
+                    model = device.deviceImageUri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Default.PhoneAndroid, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("صورة الجهاز", color = MaterialTheme.colorScheme.onSecondaryContainer, style = MaterialTheme.typography.labelMedium)
+                }
             }
         }
 
@@ -181,10 +192,19 @@ fun DeviceImagesHeader() {
                 .background(MaterialTheme.colorScheme.tertiaryContainer),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Default.BatteryChargingFull, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onTertiaryContainer)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("صورة البطارية", color = MaterialTheme.colorScheme.onTertiaryContainer, style = MaterialTheme.typography.labelMedium)
+            if (device.batteryImageUri != null) {
+                AsyncImage(
+                    model = device.batteryImageUri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Default.BatteryChargingFull, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("صورة البطارية", color = MaterialTheme.colorScheme.onTertiaryContainer, style = MaterialTheme.typography.labelMedium)
+                }
             }
         }
     }
@@ -204,6 +224,8 @@ fun DeviceDetailsSection(device: Device) {
             DetailRow("الشركة المصنعة", device.manufacturer)
             DetailRow("الموديل", device.model)
             DetailRow("الرقم التسلسلي", device.serialNumber)
+            DetailRow("فولت البطارية", device.batteryVolt.ifEmpty { "غير محدد" })
+            DetailRow("أمبير البطارية", device.batteryAmpere.ifEmpty { "غير محدد" })
             
             val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
             val dateStr = dateFormat.format(Date(device.lastBatteryChangeDate))
