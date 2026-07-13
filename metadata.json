@@ -1,0 +1,6 @@
+{
+  "name": "متابعة البطاريات",
+  "description": "تطبيق لمتابعة وتتبع بطاريات الاجهزة وسجل التغييرات",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
